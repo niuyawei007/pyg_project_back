@@ -3,12 +3,16 @@
     <div class="login_box">
       <img class="login_img" src="../assets/logo.png" alt="">
       <!-- :model="formLabelAlign" 绑定一个表达数据对象 form:{username:'',password:''} -->
-      <el-form :model="formLogin">
-        <el-form-item>
-          <el-input type="text" placeholder="请输入登录名" v-model="formLogin.username"></el-input>
+      <el-form ref="form" :model="formLogin" :rules="rules">
+        <el-form-item prop="username">
+          <el-input prefix-icon="el-icon-info" type="text" placeholder="请输入登录名" v-model="formLogin.username"></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input prefix-icon="el-icon-view" type="password" placeholder="请输入密码" v-model="formLogin.password"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-input type="password" placeholder="请输入密码" v-model="formLogin.password"></el-input>
+        <el-button type="primary" @click="submit()">登录</el-button>
+        <el-button @click="reset()">重置</el-button>
         </el-form-item>
       </el-form>
       </div>
@@ -21,9 +25,42 @@ export default {
   data () {
     return {
       formLogin: {
-        username: '',
-        password: ''
+        username: 'admin',
+        password: '123456'
+      },
+      rules: {
+        username: [
+          {required: true, message: '请输入登录名', trigger: 'blur'}
+        ],
+        password: [
+          {required: true, message: '请输入密码', trigger: 'blur'},
+          {min: 6, max: 18, message: '请输入6-18位', trigger: 'blur'}
+        ]
       }
+    }
+  },
+  methods: {
+    submit () {
+      // console.log(123)
+      this.$refs.form.validate(async valid => {
+        if (valid) {
+          // console.log('success')
+          // const res = await this.$http.post('login', this.form)
+          const {data: {data, meta}} = await this.$http.post('login', this.formLogin)
+          console.log({data: {data, meta}})
+          if (meta.status !== 200) {
+            return this.$message.error('输入的用户名或密码有误')
+          } else {
+            sessionStorage.setItem('token', data.token)
+            this.$router.push('/home')
+          }
+        }
+      })
+    },
+    reset () {
+      console.log(123)
+      this.formLogin.username = ''
+      this.formLogin.password = ''
     }
   }
 }
