@@ -9,4 +9,13 @@ axios.interceptors.request.use(config => {
   return config
 })
 
+axios.interceptors.response.use(res => {
+  // 判断 token 是否失效
+  if (res.data.meta.status === 401) {
+    location.href = '#/login'
+  } else {
+    return res
+  }
+})
+
 export default axios

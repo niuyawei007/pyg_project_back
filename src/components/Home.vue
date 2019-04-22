@@ -19,7 +19,7 @@
             <i :class="['iconfont',iconfonts[i]]"></i>
             <span>{{firstItem.authName}}</span>
           </template>
-          <el-menu-item style="min-width:160px" :index="secondItem.id" v-for="secondItem in firstItem.children" :key="secondItem.id">
+          <el-menu-item style="min-width:160px" :index="secondItem.authName" v-for="secondItem in firstItem.children" :key="secondItem.id">
             <i class="el-icon-document"></i>
             <span>{{secondItem.authName}}</span></el-menu-item>
         </el-submenu>
