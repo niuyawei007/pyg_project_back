@@ -6,19 +6,21 @@
     <!-- aside边栏 -->
     <el-aside  class="home_aside" :width="collapse?'65px':'180px'" >
       <el-menu
+        router
+        :unique-opened="true"
         :collapse="collapse"
         :collapse-transition="false"
         background-color="lightblue"
         text-color="#000"
         active-text-color="#aaa"
         style="border:0;margin-top:3px;">
-        <el-submenu :index="firstItem.id" v-for="(firstItem, i) in menus" :key="firstItem.id">
+        <el-submenu :index="firstItem.id" v-for="(firstItem, i) in menu" :key="firstItem.id">
           <template slot="title">
-            <i class="el-icon-location"></i>
+            <i :class="['iconfont',iconfonts[i]]"></i>
             <span>{{firstItem.authName}}</span>
           </template>
-          <el-menu-item index="1-1" v-for="secondItem in firstItem.children" :key="secondItem.id">
-            <i class="el-icon-location"></i>
+          <el-menu-item style="min-width:160px" :index="secondItem.id" v-for="secondItem in firstItem.children" :key="secondItem.id">
+            <i class="el-icon-document"></i>
             <span>{{secondItem.authName}}</span></el-menu-item>
         </el-submenu>
       </el-menu>
@@ -35,7 +37,8 @@ export default {
   data () {
     return {
       collapse: false,
-      menu: []
+      menu: [],
+      iconfonts: ['icon-user-fill', 'icon-cog', 'icon-shoppingcart', 'icon-file', 'icon-chart-area']
     }
   },
   methods: {
@@ -44,7 +47,7 @@ export default {
       this.collapse = !this.collapse
     },
     async getdata () {
-      const {data: {meta}} = await this.$http.get('/menu')
+      const {data: {data, meta}} = await this.$http.get('menus')
       console.log(meta)
       if (meta.status !== 200) {
         return this.$message.error('获取数据失败')
