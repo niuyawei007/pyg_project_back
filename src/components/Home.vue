@@ -85,7 +85,7 @@ export default {
   background:linear-gradient(top,lightblue,rgb(58, 171, 236));
 }
 .home_main{
-  background:linear-gradient(135deg,lightblue,rgb(137, 195, 248));
+  background:linear-gradient(135deg,rgb(212, 234, 241),rgb(179, 214, 247));
 }
 
 </style>
