@@ -1,22 +1,25 @@
 <template>
   <el-container class="home_container">
     <!-- nav标题导航栏 -->
-    <el-header class="home_header"><el-button @click="shift" type="primary" icon="el-icon-menu" circle></el-button> 品优购后台管理系统<el-button style="float:right;margin-top:15px;" type="danger" round>退出</el-button></el-header>
+    <el-header class="home_header"><el-button @click="shift" type="primary" icon="el-icon-menu" circle></el-button> 品优购后台管理系统<el-button @click="quit" style="float:right;margin-top:15px;" type="danger" round>退出</el-button></el-header>
     <el-container >
     <!-- aside边栏 -->
-    <el-aside :collapse="collapse" :collapse-transition="false" class="home_aside" :width="collapse?'65px':'180px'" >
+    <el-aside  class="home_aside" :width="collapse?'65px':'180px'" >
       <el-menu
+        :collapse="collapse"
+        :collapse-transition="false"
         background-color="lightblue"
         text-color="#000"
         active-text-color="#aaa"
-        style="border:0">
-        <el-submenu index="1">
+        style="border:0;margin-top:3px;">
+        <el-submenu :index="firstItem.id" v-for="(firstItem, i) in menus" :key="firstItem.id">
           <template slot="title">
             <i class="el-icon-location"></i>
-            <span>导航一</span>
+            <span>{{firstItem.authName}}</span>
           </template>
-          <el-menu-item index="1-1">选项2</el-menu-item>
-          <el-menu-item index="1-2">选项2</el-menu-item>
+          <el-menu-item index="1-1" v-for="secondItem in firstItem.children" :key="secondItem.id">
+            <i class="el-icon-location"></i>
+            <span>{{secondItem.authName}}</span></el-menu-item>
         </el-submenu>
       </el-menu>
     </el-aside>
@@ -31,14 +34,34 @@ export default {
   name: 'Home',
   data () {
     return {
-      collapse: ''
+      collapse: false,
+      menu: []
     }
   },
   methods: {
     shift () {
       console.log('hello')
-      this.collapse = !false
+      this.collapse = !this.collapse
+    },
+    async getdata () {
+      const {data: {meta}} = await this.$http.get('/menu')
+      console.log(meta)
+      if (meta.status !== 200) {
+        return this.$message.error('获取数据失败')
+      }
+      // 修改数据
+      this.menu = data
+    },
+    quit () {
+      console.log('退出登录')
+      const data2 = this.$http
+      console.log(data2)
+      sessionStorage.removeItem('token', data2.token)
+      this.$router.push('/login')
     }
+  },
+  mounted () {
+    this.getdata()
   }
 }
 </script>

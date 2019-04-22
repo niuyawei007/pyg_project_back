@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     submit () {
-      // console.log(123)
+      console.log('登陆一下试试')
       this.$refs.form.validate(async valid => {
         if (valid) {
           // console.log('success')
@@ -58,7 +58,7 @@ export default {
       })
     },
     reset () {
-      console.log(123)
+      console.log('重置按钮')
       this.formLogin.username = ''
       this.formLogin.password = ''
     }
