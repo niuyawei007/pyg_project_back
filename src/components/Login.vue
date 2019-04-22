@@ -1,7 +1,7 @@
 <template>
   <div class="login_container">
     <div class="login_box">
-      <img class="login_img" src="../assets/logo.png" alt="">
+      <img class="login_img" src="../assets/img/logo.png" alt="">
       <!-- :model="formLabelAlign" 绑定一个表达数据对象 form:{username:'',password:''} -->
       <el-form ref="form" :model="formLogin" :rules="rules">
         <el-form-item prop="username">
@@ -47,7 +47,7 @@ export default {
           // console.log('success')
           // const res = await this.$http.post('login', this.form)
           const {data: {data, meta}} = await this.$http.post('login', this.formLogin)
-          console.log({data: {data, meta}})
+          // console.log({data: {data, meta}})
           if (meta.status !== 200) {
             return this.$message.error('输入的用户名或密码有误')
           } else {

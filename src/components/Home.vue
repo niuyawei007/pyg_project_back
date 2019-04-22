@@ -6,19 +6,21 @@
     <!-- aside边栏 -->
     <el-aside  class="home_aside" :width="collapse?'65px':'180px'" >
       <el-menu
+        router
+        :unique-opened="true"
         :collapse="collapse"
         :collapse-transition="false"
         background-color="lightblue"
         text-color="#000"
         active-text-color="#aaa"
         style="border:0;margin-top:3px;">
-        <el-submenu :index="firstItem.id" v-for="(firstItem, i) in menus" :key="firstItem.id">
+        <el-submenu :index="firstItem.id.toString()" v-for="(firstItem,i) in menu" :key="firstItem.id">
           <template slot="title">
-            <i class="el-icon-location"></i>
+            <i :class="['iconfont',iconfonts[i]]"></i>
             <span>{{firstItem.authName}}</span>
           </template>
-          <el-menu-item index="1-1" v-for="secondItem in firstItem.children" :key="secondItem.id">
-            <i class="el-icon-location"></i>
+          <el-menu-item style="min-width:180px" :index="secondItem.path" v-for="secondItem in firstItem.children" :key="secondItem.id">
+            <i class="el-icon-document"></i>
             <span>{{secondItem.authName}}</span></el-menu-item>
         </el-submenu>
       </el-menu>
@@ -35,7 +37,8 @@ export default {
   data () {
     return {
       collapse: false,
-      menu: []
+      menu: [],
+      iconfonts: ['icon-user-fill', 'icon-cog', 'icon-shoppingcart', 'icon-file', 'icon-chart-area']
     }
   },
   methods: {
@@ -43,25 +46,26 @@ export default {
       console.log('hello')
       this.collapse = !this.collapse
     },
-    async getdata () {
-      const {data: {meta}} = await this.$http.get('/menu')
-      console.log(meta)
+    async getData () {
+      const {data: {data, meta}} = await this.$http.get('menus')
+      console.log({data: {data, meta}})
       if (meta.status !== 200) {
         return this.$message.error('获取数据失败')
-      }
+      } else {
       // 修改数据
-      this.menu = data
+        this.menu = data
+      }
     },
     quit () {
       console.log('退出登录')
       const data2 = this.$http
       console.log(data2)
-      sessionStorage.removeItem('token', data2.token)
+      sessionStorage.removeItem('token')
       this.$router.push('/login')
     }
   },
   mounted () {
-    this.getdata()
+    this.getData()
   }
 }
 </script>
