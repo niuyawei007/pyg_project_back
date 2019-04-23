@@ -1,7 +1,7 @@
 <template>
   <div class="login_container">
     <div class="login_box">
-      <img class="login_img" src="../assets/img/logo.jpg" alt="">
+      <img class="login_img" src="../assets/img/logo.png" alt="">
       <!-- :model="formLabelAlign" 绑定一个表达数据对象 form:{username:'',password:''} -->
       <el-form ref="form" :model="formLogin" :rules="rules">
         <el-form-item prop="username">
