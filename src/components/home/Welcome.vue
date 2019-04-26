@@ -21,7 +21,7 @@ h2{
 .welcome_container{
   text-align: center;
   height:100%;
-  background:url(../assets/img/hello.jpg) no-repeat;
+  background:url(../../assets/img/hello.jpg) no-repeat;
   background-size:100% 100%;
 }
 

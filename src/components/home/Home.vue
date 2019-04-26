@@ -28,7 +28,9 @@
     </el-aside>
     <!-- main主展示窗口 -->
     <el-main class="home_main"><router-view></router-view></el-main>
-    </el-container><el-progress :percentage="100" status="success"></el-progress>
+    </el-container>
+    <!-- 进度条事 -->
+    <!-- <el-progress :percentage="100" status="success"></el-progress> -->
   </el-container>
 </template>
 
@@ -49,7 +51,7 @@ export default {
     },
     async getData () {
       const {data: {data, meta}} = await this.$http.get('menus')
-      console.log({data: {data, meta}})
+      // console.log({data: {data, meta}})
       if (meta.status !== 200) {
         return this.$message.error('获取数据失败')
       } else {
@@ -86,8 +88,8 @@ export default {
   background:linear-gradient(top,lightblue,rgb(58, 171, 236));
 }
 .home_main{
-  background:linear-gradient(135deg,rgb(212, 234, 241),rgb(179, 214, 247));
   padding:0;
+  background:rgb(165, 241, 229);
 }
 
 </style>

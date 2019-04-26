@@ -1,12 +1,12 @@
 <template>
-  <div class="users_container">
-    <h2>user</h2>
+  <div class="roles_container">
+    <h2>角色</h2>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'User'
+  name: 'Roles'
 }
 </script>
 
