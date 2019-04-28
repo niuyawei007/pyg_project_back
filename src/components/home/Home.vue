@@ -29,7 +29,7 @@
     <!-- main主展示窗口 -->
     <el-main class="home_main"><router-view></router-view></el-main>
     </el-container>
-    <!-- 进度条事 -->
+    <!-- 进度条事件 -->
     <!-- <el-progress :percentage="100" status="success"></el-progress> -->
   </el-container>
 </template>
