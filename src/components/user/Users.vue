@@ -34,16 +34,19 @@
             <el-switch
               v-model="scope.row.mg_state"
               active-color="#13ce66"
-              inactive-color="#ccc">
+              inactive-color="#ccc"
+              @change="updateState(scope.row.id,scope.row.mg_state)">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width=180>
-          <el-button-group>
-            <el-button icon="el-icon-edit" round></el-button>
-            <el-button icon="el-icon-delete" round></el-button>
-            <el-button icon="el-icon-setting" round></el-button>
-          </el-button-group>
+          <template slot-scope="scope">
+            <el-button-group>
+              <el-button @click="showEditDialogFormVisible(scope.row.id)" icon="el-icon-edit" round></el-button>
+              <el-button @click="delUsers(scope.row.id)" icon="el-icon-delete" round></el-button>
+              <el-button @click="showRoleDialogFormVisible(scope.row)" icon="el-icon-setting" round></el-button>
+            </el-button-group>
+          </template>
         </el-table-column>
       </el-table>
       <div class="pager_container">
@@ -77,6 +80,47 @@
         <el-button type="primary" @click="addSubmit()">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog width="400px" title="分配角色" :visible.sync="roleDialogFormVisible">
+      <el-form label-width="100px" autocomplete="off">
+        <el-form-item label="当前用户：">
+          {{roleUserName}}
+        </el-form-item>
+        <el-form-item label="当前用户：">
+          {{roleUserRoleName}}
+        </el-form-item>
+        <el-form-item label="分配角色：">
+          <el-select v-model="roleValue" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="changeRole()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog width="400px" title="编辑用户" :visible.sync="editDialogFormVisible">
+      <el-form ref="editForm" :model="editForm" :rules="editRules" label-width="80px" autocomplete="off">
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editSubmit()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -94,7 +138,7 @@ export default {
       reqParams: {
         query: '',
         pagenum: 1,
-        pagesize: 3
+        pagesize: 5
       },
       serchValue: '',
       // 总条数
@@ -114,6 +158,31 @@ export default {
           {required: true, message: '密码必填', trigger: 'blur'},
           {min: 6, max: 18, message: '密码6-18个字符串', trigger: 'blur'}
         ],
+        email: [
+          {required: true, message: '邮箱必填', trigger: 'blur'},
+          {type: 'email', message: '邮箱格式错误', trigger: 'blur'}
+        ],
+        mobile: [
+          {required: true, message: '手机号必填', trigger: 'blur'},
+          // 手机号必须自定义校验规则  通过自己的函数来校验 （rule,value,callback）
+          {validator: checkMobile, trigger: 'blur'}
+        ]
+      },
+      roleDialogFormVisible: false,
+      // 选中角色的值
+      roleValue: '',
+      // 当前用户的 用户名
+      roleUserName: '',
+      // 当前用户的 角色
+      roleUserRoleName: '',
+      // 用户的ID
+      roleUserId: '',
+      // 角色下拉所有选项
+      options: [],
+      // 修改角色相关
+      editDialogFormVisible: false,
+      editForm: {},
+      editRules: {
         email: [
           {required: true, message: '邮箱必填', trigger: 'blur'},
           {type: 'email', message: '邮箱格式错误', trigger: 'blur'}
@@ -148,6 +217,34 @@ export default {
       this.reqParams.pagenum = 1
       this.getData()
     },
+    async showEditDialogFormVisible (id) {
+      // 显示编辑对话框
+      this.editDialogFormVisible = true
+      // 可能需要重置表单
+      // 填充数据
+      // 发请求需要用户的ID
+      const {data: {data, meta}} = await this.$http.get(`users/${id}`)
+      if (meta.status !== 200) return this.$message.error('获取用户数据失败')
+      // 把数据展示表单内
+      this.editForm = data
+    },
+    editSubmit () {
+      // 编辑的提交
+      // 整个表单的校验
+      this.$refs.editForm.validate(async valid => {
+        if (valid) {
+          // 校验成功
+          const {data: {meta}} = await this.$http.put(`users/${this.editForm.id}`, {
+            email: this.editForm.email,
+            mobile: this.editForm.mobile
+          })
+          if (meta.status !== 200) return this.$message.error('修改失败')
+          this.$message.success('修改成功')
+          this.getData()
+          this.editDialogFormVisible = false
+        }
+      })
+    },
     addSubmit () {
       this.$refs.addForm.validate(async valid => {
         if (valid) {
@@ -167,6 +264,51 @@ export default {
       this.dialogFormVisible = true
       // 重置表单  内容  验证
       this.$refs.addForm.resetFields()
+    },
+    async updateState (id, newState) {
+      // id 用户的ID newState 已改变的状态
+      // console.log(id, newState)
+      const {data: {meta}} = await this.$http.put(`users/${id}/state/${newState}`)
+      if (meta.status !== 200) return this.$message.error('修改状态失败')
+      this.$message.success('修改状态成功')
+      this.getData()
+    },
+    delUsers (id) {
+      this.$confirm('是否删除该数据?', '温馨提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 点击了确认  发请求
+        const {data: {meta}} = await this.$http.delete(`users/${id}`)
+        if (meta.status !== 200) return this.$message.error('删除失败')
+        this.$message.success('删除成功')
+        this.getData()
+      })
+    },
+    async showRoleDialogFormVisible (row) {
+      // 打开对话框
+      this.roleDialogFormVisible = true
+      // 渲染下拉菜单
+      const {data: {data, meta}} = await this.$http.get('roles')
+      if (meta.status !== 200) return this.$message.error('获取角色失败')
+      this.options = data
+      // 当前用户的信息  获取用户信息
+      // const {data: {data: ud, meta: um}} = await this.$http.get(`users/${id}`)
+      // if (um.status !== 200) return this.$message.error('获取用户失败')
+      // console.log(ud)
+      this.roleUserId = row.id
+      this.roleUserName = row.username
+      this.roleUserRoleName = row.role_name
+    },
+    async changeRole () {
+      const {data: {meta}} = await this.$http.put(`users/${this.roleUserId}/role`, {
+        rid: this.roleValue
+      })
+      if (meta.status !== 200) return this.$message.error('分配角色失败')
+      this.$message.success('分配角色成功')
+      this.roleDialogFormVisible = false
+      this.getData()
     }
   },
   mounted () {

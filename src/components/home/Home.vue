@@ -13,14 +13,14 @@
         :collapse-transition="false"
         background-color="lightblue"
         text-color="#000"
-        active-text-color="#aaa"
-        style="border:0;margin-top:3px;">
-        <el-submenu :index="firstItem.id.toString()" v-for="(firstItem,i) in menu" :key="firstItem.id">
+        active-text-color="brown"
+        style="border:0;margin-top:3px;font-weight:700;">
+        <el-submenu active-text-color="yellow" :index="firstItem.id.toString()" v-for="(firstItem,i) in menu" :key="firstItem.id">
           <template slot="title">
             <i :class="['iconfont',iconfonts[i]]"></i>
             <span>{{firstItem.authName}}</span>
           </template>
-          <el-menu-item style="min-width:180px; padding-left:30px;" :index="secondItem.path" v-for="secondItem in firstItem.children" :key="secondItem.id">
+          <el-menu-item style="min-width:180px; padding-left:33px;" :index="secondItem.path" v-for="secondItem in firstItem.children" :key="secondItem.id">
             <i class="el-icon-document"></i>
             <span>{{secondItem.authName}}</span></el-menu-item>
         </el-submenu>
